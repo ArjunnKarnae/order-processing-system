@@ -1,13 +1,13 @@
-package com.orderprocessing.inventory_service;
+package com.orderprocessing.notifications;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class InventoryServiceApplication {
+public class NotificationServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(InventoryServiceApplication.class, args);
+		SpringApplication.run(NotificationServiceApplication.class, args);
 	}
 
 }

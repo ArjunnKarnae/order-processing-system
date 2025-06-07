@@ -1,10 +1,10 @@
-package com.orderprocessing.notification_service;
+package com.orderprocessing.payments;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class NotificationServiceApplicationTests {
+class PaymentServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

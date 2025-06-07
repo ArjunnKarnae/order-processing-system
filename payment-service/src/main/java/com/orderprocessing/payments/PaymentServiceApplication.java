@@ -1,4 +1,4 @@
-package com.orderprocessing.payment_service;
+package com.orderprocessing.payments;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
