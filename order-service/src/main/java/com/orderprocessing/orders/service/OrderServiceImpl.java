@@ -4,6 +4,7 @@ import com.orderprocessing.orders.dto.OrderRequest;
 import com.orderprocessing.orders.dto.OrderResponse;
 import com.orderprocessing.orders.entity.OrderEntity;
 import com.orderprocessing.orders.entity.OrderItemsEntity;
+import com.orderprocessing.orders.exceptions.OrderNotFoundException;
 import com.orderprocessing.orders.mapper.OrderServiceMapper;
 import com.orderprocessing.orders.repository.OrderItemsRepository;
 import com.orderprocessing.orders.repository.OrderRepository;
@@ -12,8 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements IOrdersService{
@@ -35,7 +40,7 @@ public class OrderServiceImpl implements IOrdersService{
         OrderEntity orderEntity = OrderServiceMapper.mapOrderRequestToOrderEntity(orderRequest);
         orderEntity.setOrderStatus("ORDERED");
         orderEntity.setPaymentStatus("PENDING");
-        orderEntity.setOrderId("ORD-001");
+        orderEntity.setOrderId("ORD-002");
 
         List<OrderItemsEntity> orderItemsEntityList = OrderServiceMapper.mapOrderRequestToOrderItemsEntity(orderRequest);
         orderItemsEntityList.stream().forEach(orderItemsEntity -> orderEntity.addOrderItemsEntity(orderItemsEntity));
@@ -45,5 +50,28 @@ public class OrderServiceImpl implements IOrdersService{
         OrderResponse orderResponse = OrderServiceMapper.mapOrderResponseFromCreatedOrder(createdOrder);
         return orderResponse;
     }
+
+    @Override
+    public List<OrderResponse> retrieveAllOrders() {
+
+        List<OrderEntity> fetchedOrderEntityList =  this.orderRepository.findAll();
+        List<OrderResponse> orderResponseList = fetchedOrderEntityList.stream().map(fetchedOrder ->{
+            return OrderServiceMapper.mapOrderResponseFromCreatedOrder(fetchedOrder);
+        }).collect(Collectors.toList());
+
+        return orderResponseList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderResponse retrieveOrderById(String orderId) {
+
+        return this.orderRepository
+                .findById(orderId).map(OrderServiceMapper::mapOrderResponseFromCreatedOrder)
+                .orElseThrow(() -> new OrderNotFoundException(String.format("No Order exists with Order Id %s", orderId)));
+
+
+    }
+
 
 }
