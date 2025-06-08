@@ -9,6 +9,7 @@ import com.orderprocessing.orders.mapper.OrderServiceMapper;
 import com.orderprocessing.orders.repository.OrderItemsRepository;
 import com.orderprocessing.orders.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -68,7 +69,8 @@ public class OrderServiceImpl implements IOrdersService{
 
         return this.orderRepository
                 .findById(orderId).map(OrderServiceMapper::mapOrderResponseFromCreatedOrder)
-                .orElseThrow(() -> new OrderNotFoundException(String.format("No Order exists with Order Id %s", orderId)));
+                .orElseThrow(
+                        () -> new OrderNotFoundException(String.format("No Order exists with Order Id %s", orderId), HttpStatus.INTERNAL_SERVER_ERROR.value()));
 
 
     }
