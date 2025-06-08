@@ -12,14 +12,14 @@ public class OrderItemsEntity {
     public OrderItemsEntity() {
     }
 
-    public OrderItemsEntity(long itemId, String productId, String productName, String productDescription, String category, double price, String orderId) {
+    public OrderItemsEntity(long itemId, String productId, String productName, String productDescription, String category, double price) {
         this.itemId = itemId;
         this.productId = productId;
         this.productName = productName;
         this.productDescription = productDescription;
         this.category = category;
         this.price = price;
-        this.orderId = orderId;
+
     }
 
     @Id
@@ -48,8 +48,8 @@ public class OrderItemsEntity {
     private int quantity;
 
     @ManyToOne()
-    @JoinColumn(name = "order_id", referencedColumnName = "orderId")
-    private String orderId;
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
+    private OrderEntity orderEntity;
 
     public String getProductId() {
         return productId;
@@ -99,12 +99,12 @@ public class OrderItemsEntity {
         this.price = price;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public OrderEntity getOrderEntity() {
+        return orderEntity;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setOrderEntity(OrderEntity orderEntity) {
+        this.orderEntity = orderEntity;
     }
 
     public int getQuantity() {
@@ -125,7 +125,7 @@ public class OrderItemsEntity {
                 ", category='" + category + '\'' +
                 ", price=" + price +
                 ", quantity=" + quantity +
-                ", orderId='" + orderId + '\'' +
+
                 '}';
     }
 }

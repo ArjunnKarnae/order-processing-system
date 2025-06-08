@@ -35,10 +35,14 @@ public class OrderServiceImpl implements IOrdersService{
         OrderEntity orderEntity = OrderServiceMapper.mapOrderRequestToOrderEntity(orderRequest);
         orderEntity.setOrderStatus("ORDERED");
         orderEntity.setPaymentStatus("PENDING");
-        OrderEntity createdOrder = this.orderRepository.save(orderEntity);
+        orderEntity.setOrderId("ORD-001");
+
         List<OrderItemsEntity> orderItemsEntityList = OrderServiceMapper.mapOrderRequestToOrderItemsEntity(orderRequest);
-        List<OrderItemsEntity> createdOrderItemsEntity = this.orderItemsRepository.saveAll(orderItemsEntityList);
-        OrderResponse orderResponse = OrderServiceMapper.mapOrderResponseFromCreatedOrder(createdOrder, createdOrderItemsEntity);
+        orderItemsEntityList.stream().forEach(orderItemsEntity -> orderEntity.addOrderItemsEntity(orderItemsEntity));
+
+        OrderEntity createdOrder = this.orderRepository.save(orderEntity);
+       // List<OrderItemsEntity> createdOrderItemsEntity = this.orderItemsRepository.saveAll(orderItemsEntityList);
+        OrderResponse orderResponse = OrderServiceMapper.mapOrderResponseFromCreatedOrder(createdOrder);
         return orderResponse;
     }
 

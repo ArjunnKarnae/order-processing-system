@@ -2,6 +2,23 @@ spring:
   application:
     name: order-service
 
+  config:
+    import: "optional:configserver:http://localhost:8761/"
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orderprocessingdb
+    username: arjunn
+    password:
+    driverClassName: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        default_schema: orders_schema
 
 server:
   port: 8080

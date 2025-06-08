@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,7 +33,7 @@ public class OrderEntity extends BaseEntity{
     @Column(name = "customer_id")
     private String customerId;
 
-    @OneToMany(mappedBy = "orderId")
+    @OneToMany(mappedBy = "orderEntity", cascade = CascadeType.ALL)
     private List<OrderItemsEntity> orderItemsEntityList;
 
     @Positive
@@ -90,6 +91,19 @@ public class OrderEntity extends BaseEntity{
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public void addOrderItemsEntity(OrderItemsEntity orderItemsEntity){
+        if(null == this.orderItemsEntityList){
+            this.orderItemsEntityList = new ArrayList<>();
+        }
+        this.orderItemsEntityList.add(orderItemsEntity);
+        orderItemsEntity.setOrderEntity(this);
+    }
+
+    public void removeOrderItemsEntity(OrderItemsEntity orderItemsEntity){
+        this.orderItemsEntityList.remove(orderItemsEntity);
+        orderItemsEntity.setOrderEntity(null);
     }
 
     @Override
