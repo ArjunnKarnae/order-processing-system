@@ -13,12 +13,14 @@ public class ProductEntity extends BaseEntity{
     public ProductEntity() {
     }
 
-    public ProductEntity(String productId, String productName, String productDescription, String category, int stockQuantity, Double price) {
+    public ProductEntity(String productId, String productName, String productDescription, String category, int currentStockLevel, int reservedStockLevel, String status, Double price) {
         this.productId = productId;
         this.productName = productName;
         this.productDescription = productDescription;
         this.category = category;
-        this.stockQuantity = stockQuantity;
+        this.currentStockLevel = currentStockLevel;
+        this.reservedStockLevel = reservedStockLevel;
+        this.status = status;
         this.price = price;
     }
 
@@ -35,9 +37,15 @@ public class ProductEntity extends BaseEntity{
     @Column(name = "category", nullable = false)
     private String category;
 
-    @Column(name = "stock_quantity", nullable = false)
+    @Column(name = "current_stock_level", nullable = false)
     @Positive
-    private int stockQuantity;
+    private int currentStockLevel;
+
+    @Column(name = "reserved_stock_level")
+    private int reservedStockLevel;
+
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "price", nullable = false)
     @Positive
@@ -75,20 +83,36 @@ public class ProductEntity extends BaseEntity{
         this.category = category;
     }
 
-    public int getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public void setStockQuantity(int stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
-
     public Double getPrice() {
         return price;
     }
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public int getCurrentStockLevel() {
+        return currentStockLevel;
+    }
+
+    public void setCurrentStockLevel(int currentStockLevel) {
+        this.currentStockLevel = currentStockLevel;
+    }
+
+    public int getReservedStockLevel() {
+        return reservedStockLevel;
+    }
+
+    public void setReservedStockLevel(int reservedStockLevel) {
+        this.reservedStockLevel = reservedStockLevel;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
@@ -98,7 +122,9 @@ public class ProductEntity extends BaseEntity{
                 ", productName='" + productName + '\'' +
                 ", productDescription='" + productDescription + '\'' +
                 ", category='" + category + '\'' +
-                ", stockQuantity=" + stockQuantity +
+                ", currentStockLevel=" + currentStockLevel +
+                ", reservedStockLevel=" + reservedStockLevel +
+                ", status='" + status + '\'' +
                 ", price=" + price +
                 '}';
     }

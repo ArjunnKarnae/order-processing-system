@@ -17,11 +17,16 @@ public class InventoryMapper {
         List<ProductEntity> productEntityList = inventoryRequestDTO.getProductDTOList().stream().filter(Objects::nonNull)
                 .map(productDTO -> {
                     ProductEntity productEntity = new ProductEntity();
-                    productEntity.setProductId(getRandomUUID());
+                    if(null == productDTO.getProductId()){
+                        productEntity.setProductId(getRandomUUID());
+                    }else{
+                        productEntity.setProductId(productDTO.getProductId());
+                    }
+                    productEntity.setStatus("AVAILABLE");
                     productEntity.setProductName(productDTO.getProductName());
                     productEntity.setProductDescription(productDTO.getProductDescription());
                     productEntity.setCategory(productDTO.getCategory());
-                    productEntity.setStockQuantity(productDTO.getQuantity());
+                    productEntity.setCurrentStockLevel(productDTO.getQuantity());
                     productEntity.setPrice(productDTO.getPrice());
                     return productEntity;
                 }).collect(Collectors.toList());
@@ -44,7 +49,7 @@ public class InventoryMapper {
                     productDTO.setProductDescription(productEntity.getProductDescription());
                     productDTO.setPrice(productEntity.getPrice());
                     productDTO.setCategory(productEntity.getCategory());
-                    productDTO.setQuantity(productEntity.getStockQuantity());
+                    productDTO.setQuantity(productEntity.getCurrentStockLevel());
                     return productDTO;
                 }).collect(Collectors.toList());
         inventoryResponseDTO.setProductDTOList(productDTOList);
@@ -60,7 +65,7 @@ public class InventoryMapper {
         productDTO.setProductDescription(productEntity.getProductDescription());
         productDTO.setPrice(productEntity.getPrice());
         productDTO.setCategory(productEntity.getCategory());
-        productDTO.setQuantity(productEntity.getStockQuantity());
+        productDTO.setQuantity(productEntity.getCurrentStockLevel());
         productDTOList.add(productDTO);
         inventoryResponseDTO.setProductDTOList(productDTOList);
         return inventoryResponseDTO;

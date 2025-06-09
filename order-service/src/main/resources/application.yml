@@ -19,6 +19,9 @@ spring:
     properties:
       hibernate:
         default_schema: orders_schema
+  kafka:
+    bootstrap-servers: localhost:9092
+    topic-name: order-topic
 
 server:
   port: 8080

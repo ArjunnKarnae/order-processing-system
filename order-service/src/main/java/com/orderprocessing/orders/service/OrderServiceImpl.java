@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,13 +42,13 @@ public class OrderServiceImpl implements IOrdersService{
         OrderEntity orderEntity = OrderServiceMapper.mapOrderRequestToOrderEntity(orderRequest);
         orderEntity.setOrderStatus("ORDERED");
         orderEntity.setPaymentStatus("PENDING");
-        orderEntity.setOrderId("ORD-002");
+        orderEntity.setOrderId(getOrderId());
 
         List<OrderItemsEntity> orderItemsEntityList = OrderServiceMapper.mapOrderRequestToOrderItemsEntity(orderRequest);
         orderItemsEntityList.stream().forEach(orderItemsEntity -> orderEntity.addOrderItemsEntity(orderItemsEntity));
 
         OrderEntity createdOrder = this.orderRepository.save(orderEntity);
-       // List<OrderItemsEntity> createdOrderItemsEntity = this.orderItemsRepository.saveAll(orderItemsEntityList);
+
         OrderResponse orderResponse = OrderServiceMapper.mapOrderResponseFromCreatedOrder(createdOrder);
         return orderResponse;
     }
@@ -73,6 +74,11 @@ public class OrderServiceImpl implements IOrdersService{
                         () -> new OrderNotFoundException(String.format("No Order exists with Order Id %s", orderId), HttpStatus.INTERNAL_SERVER_ERROR.value()));
 
 
+    }
+
+    private String getOrderId(){
+        String randomId = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        return "ORD-"+randomId;
     }
 
 
