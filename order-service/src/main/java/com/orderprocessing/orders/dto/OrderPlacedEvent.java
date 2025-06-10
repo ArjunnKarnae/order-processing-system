@@ -7,14 +7,12 @@ public class OrderPlacedEvent {
     public OrderPlacedEvent() {
     }
 
-    public OrderPlacedEvent(String orderId, String productId, List<OrderItemDTO> items) {
+    public OrderPlacedEvent(String orderId, List<OrderItemDTO> items) {
         this.orderId = orderId;
-        this.productId = productId;
         this.items = items;
     }
 
     private String orderId;
-    private String productId;
     private List<OrderItemDTO> items;
 
     public String getOrderId() {
@@ -23,14 +21,6 @@ public class OrderPlacedEvent {
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public String getProductId() {
-        return productId;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
     }
 
     public List<OrderItemDTO> getItems() {

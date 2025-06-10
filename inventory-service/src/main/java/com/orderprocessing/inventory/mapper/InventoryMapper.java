@@ -3,7 +3,9 @@ package com.orderprocessing.inventory.mapper;
 import com.orderprocessing.inventory.dto.InventoryRequestDTO;
 import com.orderprocessing.inventory.dto.InventoryResponseDTO;
 import com.orderprocessing.inventory.dto.ProductDTO;
+import com.orderprocessing.inventory.dto.ProductReservationsDTO;
 import com.orderprocessing.inventory.entity.ProductEntity;
+import com.orderprocessing.inventory.entity.ProductReservationsEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,5 +71,15 @@ public class InventoryMapper {
         productDTOList.add(productDTO);
         inventoryResponseDTO.setProductDTOList(productDTOList);
         return inventoryResponseDTO;
+    }
+
+    public static ProductReservationsDTO mapProductReservationEntityToDto(ProductReservationsEntity productReservationsEntity){
+        ProductReservationsDTO productReservationsDTO = new ProductReservationsDTO();
+        productReservationsDTO.setOrderId(productReservationsEntity.getOrderId());
+        productReservationsDTO.setReservationId(productReservationsEntity.getReservationId());
+        productReservationsDTO.setProductId(productReservationsEntity.getProductId());
+        productReservationsDTO.setStatus(productReservationsEntity.getStatus());
+        productReservationsDTO.setQuantityReserved(productReservationsEntity.getQuantityReserved());
+        return productReservationsDTO;
     }
 }

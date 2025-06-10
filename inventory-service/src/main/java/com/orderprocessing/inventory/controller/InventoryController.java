@@ -2,6 +2,7 @@ package com.orderprocessing.inventory.controller;
 
 import com.orderprocessing.inventory.dto.InventoryRequestDTO;
 import com.orderprocessing.inventory.dto.InventoryResponseDTO;
+import com.orderprocessing.inventory.dto.ProductReservationsDTO;
 import com.orderprocessing.inventory.service.IInventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,11 @@ public class InventoryController {
     public ResponseEntity<InventoryResponseDTO> getProductById(@PathVariable String productId){
         InventoryResponseDTO inventoryResponseDTO = this.inventoryService.getProductById(productId);
         return ResponseEntity.status(200).body(inventoryResponseDTO);
+    }
+
+    @GetMapping("/products/orders")
+    public ResponseEntity<List<ProductReservationsDTO>> getAllProductOrders(){
+        List<ProductReservationsDTO> productReservationsDTOList = this.inventoryService.getAllProductOrders();
+        return ResponseEntity.status(200).body(productReservationsDTOList);
     }
 }

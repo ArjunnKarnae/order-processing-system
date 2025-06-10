@@ -1,8 +1,6 @@
 package com.orderprocessing.orders.service;
 
-import com.orderprocessing.orders.dto.OrderPlacedEvent;
-import com.orderprocessing.orders.dto.OrderRequest;
-import com.orderprocessing.orders.dto.OrderResponse;
+import com.orderprocessing.orders.dto.*;
 import com.orderprocessing.orders.entity.OrderEntity;
 import com.orderprocessing.orders.entity.OrderItemsEntity;
 import com.orderprocessing.orders.exceptions.OrderNotFoundException;
@@ -27,15 +25,15 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceImpl implements IOrdersService{
 
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    private KafkaTemplate<String, OrderPlacedEvent> orderPlacedEventKafkaTemplate;
 
     private OrderRepository orderRepository;
 
     private OrderItemsRepository orderItemsRepository;
 
     @Autowired
-    public OrderServiceImpl(KafkaTemplate<String, Object> kafkaTemplate, OrderRepository orderRepository, OrderItemsRepository orderItemsRepository) {
-        this.kafkaTemplate = kafkaTemplate;
+    public OrderServiceImpl(KafkaTemplate<String, OrderPlacedEvent> orderPlacedEventKafkaTemplate, OrderRepository orderRepository, OrderItemsRepository orderItemsRepository) {
+        this.orderPlacedEventKafkaTemplate = orderPlacedEventKafkaTemplate;
         this.orderRepository = orderRepository;
         this.orderItemsRepository = orderItemsRepository;
     }
@@ -62,11 +60,8 @@ public class OrderServiceImpl implements IOrdersService{
     }
 
     private void sendOrderPlacedEvent(OrderEntity createdOrder) {
-        OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent();
-        orderPlacedEvent.setOrderId(createdOrder.getOrderId());
-        orderPlacedEvent.setProductId(createdOrder.getOrderItemsEntityList().get(0).getProductId());
-
-        this.kafkaTemplate.send("order-topic", orderPlacedEvent.getOrderId(), orderPlacedEvent);
+        OrderPlacedEvent orderPlacedEvent = populateOrderPlacedEvent(createdOrder);
+        this.orderPlacedEventKafkaTemplate.send("order-topic", orderPlacedEvent.getOrderId(), orderPlacedEvent);
     }
 
     @Override
@@ -95,6 +90,25 @@ public class OrderServiceImpl implements IOrdersService{
     private String getOrderId(){
         String randomId = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         return "ORD-"+randomId;
+    }
+
+    private OrderPlacedEvent populateOrderPlacedEvent(OrderEntity createdOrder){
+        OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent();
+        orderPlacedEvent.setOrderId(createdOrder.getOrderId());
+        List<OrderItemDTO> orderItemDTOList = createdOrder.getOrderItemsEntityList().stream().map(orderItemsEntity -> {
+            OrderItemDTO orderItemDTO = new OrderItemDTO();
+            orderItemDTO.setPrice(orderItemsEntity.getPrice());
+            orderItemDTO.setQuantity(orderItemsEntity.getQuantity());
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setProductId(orderItemsEntity.getProductId());
+            productDTO.setProductName(orderItemsEntity.getProductName());
+            productDTO.setProductDescription(orderItemsEntity.getProductDescription());
+            productDTO.setCategory(orderItemsEntity.getCategory());
+            orderItemDTO.setProductDTO(productDTO);
+            return orderItemDTO;
+        }).collect(Collectors.toList());
+        orderPlacedEvent.setItems(orderItemDTOList);
+        return orderPlacedEvent;
     }
 
 
