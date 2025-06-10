@@ -1,5 +1,6 @@
 package com.orderprocessing.orders.service;
 
+import com.orderprocessing.orders.dto.OrderPlacedEvent;
 import com.orderprocessing.orders.dto.OrderRequest;
 import com.orderprocessing.orders.dto.OrderResponse;
 import com.orderprocessing.orders.entity.OrderEntity;
@@ -10,6 +11,7 @@ import com.orderprocessing.orders.repository.OrderItemsRepository;
 import com.orderprocessing.orders.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -25,15 +27,19 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceImpl implements IOrdersService{
 
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
     private OrderRepository orderRepository;
 
     private OrderItemsRepository orderItemsRepository;
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, OrderItemsRepository orderItemsRepository) {
+    public OrderServiceImpl(KafkaTemplate<String, Object> kafkaTemplate, OrderRepository orderRepository, OrderItemsRepository orderItemsRepository) {
+        this.kafkaTemplate = kafkaTemplate;
         this.orderRepository = orderRepository;
         this.orderItemsRepository = orderItemsRepository;
     }
+
 
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
     @Override
@@ -49,8 +55,18 @@ public class OrderServiceImpl implements IOrdersService{
 
         OrderEntity createdOrder = this.orderRepository.save(orderEntity);
 
+        sendOrderPlacedEvent(createdOrder);
+
         OrderResponse orderResponse = OrderServiceMapper.mapOrderResponseFromCreatedOrder(createdOrder);
         return orderResponse;
+    }
+
+    private void sendOrderPlacedEvent(OrderEntity createdOrder) {
+        OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent();
+        orderPlacedEvent.setOrderId(createdOrder.getOrderId());
+        orderPlacedEvent.setProductId(createdOrder.getOrderItemsEntityList().get(0).getProductId());
+
+        this.kafkaTemplate.send("order-topic", orderPlacedEvent.getOrderId(), orderPlacedEvent);
     }
 
     @Override

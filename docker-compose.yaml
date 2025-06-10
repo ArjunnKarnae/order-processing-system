@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  kafka:
+    image: apache/kafka:3.9.0
+    hostname: "kafka-broker"
+    container_name: kafka-service
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://9092, CONTROLLER://9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-broker:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-data
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_OFFSETS_TOPICS_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka-data:/tmp/kraft-data
+    command: > # Corrected path for server.properties
+      sh -c "
+        if [ ! -f /tmp/kraft-data/meta.properties ]; then
+          KAFKA_CLUSTER_ID=$(/opt/kafka/bin/kafka-storage.sh random-uuid);
+          echo \"Generated KAFKA_CLUSTER_ID: $KAFKA_CLUSTER_ID\";
+          /opt/kafka/bin/kafka-storage.sh format -t \"$KAFKA_CLUSTER_ID\" -c /opt/kafka/config/kraft/server.properties; # Corrected path
+        fi;
+        exec /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/kraft/server.properties # Corrected path
+      "
+volumes:
+  kafka-data:
+
+
+
+

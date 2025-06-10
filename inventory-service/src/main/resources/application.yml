@@ -17,5 +17,10 @@ spring:
       hibernate:
         default_schema: inventory_schema
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: inventory-consumer-group
+
 server:
   port: 8081

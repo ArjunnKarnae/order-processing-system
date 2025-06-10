@@ -2,14 +2,14 @@ package com.orderprocessing.inventory.service;
 
 import com.orderprocessing.inventory.dto.InventoryRequestDTO;
 import com.orderprocessing.inventory.dto.InventoryResponseDTO;
-import com.orderprocessing.inventory.dto.ProductDTO;
+import com.orderprocessing.inventory.dto.OrderPlacedEvent;
 import com.orderprocessing.inventory.entity.ProductEntity;
 import com.orderprocessing.inventory.exceptions.ProductNotFoundException;
 import com.orderprocessing.inventory.mapper.InventoryMapper;
 import com.orderprocessing.inventory.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 public class InventoryServiceImpl implements IInventoryService{
@@ -73,5 +74,18 @@ public class InventoryServiceImpl implements IInventoryService{
                 );
     }
 
+    @KafkaListener(topics = "order-topic", groupId = "inventory-consumer-group", containerFactory = "concurrentKafkaListenerContainerFactory"
+    )
+    public void consumeOrderPlacedEvent(OrderPlacedEvent orderPlacedEvent){
+        System.out.println("################## Start - Reading the event data ############");
+       // if(object instanceof OrderPlacedEvent){
+          //  OrderPlacedEvent orderPlacedEvent = (OrderPlacedEvent) object;
+            System.out.println(orderPlacedEvent);
+       // }else{
+       //     System.out.println("In Else loop");
+      //  }
+
+        System.out.println("################## End - Reading the event data ############");
+    }
 
 }
