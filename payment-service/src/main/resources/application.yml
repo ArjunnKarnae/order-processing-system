@@ -1,6 +1,12 @@
 spring:
   application:
-    name: inventory-service
+    name: payment-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: payments-consumers-group
+      topic-name: inventory-reservation-topic
 
   datasource:
     url: jdbc:postgresql://localhost:5432/orderprocessingdb
@@ -15,14 +21,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
-        default_schema: inventory_schema
+        default_schema: payments_schema
 
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: inventory-consumer-group
-    producer:
-      topic-name: inventory-reservation-topic
 
 server:
-  port: 8081
+  port: 8083
