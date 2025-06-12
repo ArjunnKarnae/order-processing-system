@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.orderprocessing.inventory.events.OrderPlacedEvent;
+import com.orderprocessing.inventory.events.PaymentFailedEvent;
+import com.orderprocessing.inventory.events.PaymentProcessedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +39,6 @@ public class KafkaConsumerConfig {
         configsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         configsMap.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-       // configsMap.put(JsonDeserializer.TRUSTED_PACKAGES, "com.orderprocessing.inventory.dto");
-      //  configsMap.put(JsonDeserializer.REMOVE_TYPE_INFO_HEADERS, false);
         return configsMap;
     }
 
@@ -79,19 +79,46 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConsumerFactory<String, OrderPlacedEvent> orderPlacedEventConsumerFactory(){
-        JsonDeserializer<OrderPlacedEvent> deserializer = new JsonDeserializer<>(OrderPlacedEvent.class, objectMapper());
-        deserializer.addTrustedPackages("com.orderprocessing.inventory.events");
-        deserializer.setUseTypeMapperForKey(false);
-        deserializer.setUseTypeHeaders(false);
-        return new DefaultKafkaConsumerFactory<>(configsMap(), new StringDeserializer(), deserializer);
+        return createConsumerFactory(OrderPlacedEvent.class);
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, OrderPlacedEvent> orderPlacedEventConcurrentKafkaListenerContainerFactory(){
-        ConcurrentKafkaListenerContainerFactory<String, OrderPlacedEvent> orderPlacedEventFactory =
-                new ConcurrentKafkaListenerContainerFactory<>();
-        orderPlacedEventFactory.setConsumerFactory(orderPlacedEventConsumerFactory());
-        return orderPlacedEventFactory;
+        return createContainerFactory(OrderPlacedEvent.class);
+    }
+
+    @Bean(name = "paymentProcessedEventConsumerFactory")
+    public ConsumerFactory<String, PaymentProcessedEvent> paymentProcessedEventConsumerFactory(){
+        return createConsumerFactory(PaymentProcessedEvent.class);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentProcessedEvent> paymentProcessedContainerFactory(){
+        return createContainerFactory(PaymentProcessedEvent.class);
+    }
+
+    @Bean(name = "paymentFailedEventConsumerFactory")
+    public ConsumerFactory<String, PaymentFailedEvent> paymentFailedEventConsumerFactory(){
+        return createConsumerFactory(PaymentFailedEvent.class);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentFailedEvent> paymentFailedContainerFactory(){
+        return createContainerFactory(PaymentFailedEvent.class);
+    }
+
+    public <T> ConsumerFactory<String, T> createConsumerFactory(Class<T> targetType){
+        JsonDeserializer<T> deserializer = new JsonDeserializer<>(targetType, objectMapper());
+        deserializer.addTrustedPackages("com.orderprocessing.inventory.events");
+        deserializer.setUseTypeMapperForKey(false);
+        deserializer.setUseTypeHeaders(false);
+        return new DefaultKafkaConsumerFactory<String, T>(configsMap(), new StringDeserializer(), deserializer);
+    }
+
+    public <T> ConcurrentKafkaListenerContainerFactory<String, T> createContainerFactory(Class<T> targetType){
+        ConcurrentKafkaListenerContainerFactory<String, T> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(createConsumerFactory(targetType));
+        return factory;
     }
 
 }

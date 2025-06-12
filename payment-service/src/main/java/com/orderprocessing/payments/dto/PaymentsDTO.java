@@ -1,18 +1,13 @@
-package com.orderprocessing.payments.entity;
+package com.orderprocessing.payments.dto;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "payments")
-public class PaymentsEntity extends BaseEntity{
+public class PaymentsDTO {
 
-    public PaymentsEntity() {
+    public PaymentsDTO() {
     }
 
-    public PaymentsEntity(String paymentId, String orderId, String paymentMethod, String paymentStatus, Double totalAmount) {
+    public PaymentsDTO(String paymentId, String orderId, String paymentMethod, String paymentStatus, Double totalAmount) {
         this.paymentId = paymentId;
         this.orderId = orderId;
         this.paymentMethod = paymentMethod;
@@ -20,16 +15,10 @@ public class PaymentsEntity extends BaseEntity{
         this.totalAmount = totalAmount;
     }
 
-    @Id
-    @Column(name = "payment_id")
     private String paymentId;
-    @Column(name = "order_id")
     private String orderId;
-    @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
-    @Column(name = "payment_status")
     private String paymentStatus;
-    @Column(name = "total_amount")
     private Double totalAmount;
 
     public String getPaymentId() {
@@ -74,7 +63,7 @@ public class PaymentsEntity extends BaseEntity{
 
     @Override
     public String toString() {
-        return "PaymentsEntity{" +
+        return "PaymentsDTO{" +
                 "paymentId='" + paymentId + '\'' +
                 ", orderId='" + orderId + '\'' +
                 ", paymentMethod='" + paymentMethod + '\'' +

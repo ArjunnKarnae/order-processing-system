@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductReservationsRepository extends JpaRepository<ProductReservationsEntity, String> {
+
+    public ProductReservationsEntity findByOrderId(String orderId);
 }

@@ -2,6 +2,7 @@ package com.orderprocessing.inventory.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.orderprocessing.inventory.events.InventoryReservationFailedEvent;
 import com.orderprocessing.inventory.events.InventoryReservedEvent;
@@ -40,32 +41,41 @@ public class KafkaProducerConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         return objectMapper;
     }
 
     @Bean
     public ProducerFactory<String, InventoryReservedEvent> inventoryReservedEventProducerFactory(){
-        JsonSerializer<InventoryReservedEvent> serializer = new JsonSerializer<>(producerObjectMapper());
-        serializer.setAddTypeInfo(false);
-        return new DefaultKafkaProducerFactory<String, InventoryReservedEvent>(configs(), new StringSerializer(), serializer);
-
+        return createProducerFactory();
     }
 
     @Bean(name = "inventoryReservedEventKafkaTemplate")
     public KafkaTemplate<String, InventoryReservedEvent> inventoryReservedEventKafkaTemplate(){
-        return new KafkaTemplate<String, InventoryReservedEvent>(inventoryReservedEventProducerFactory());
+        //return new KafkaTemplate<String, InventoryReservedEvent>(inventoryReservedEventProducerFactory());
+        return createKafkaTemplate();
     }
 
     @Bean
     public ProducerFactory<String, InventoryReservationFailedEvent> inventoryReservationFailedEventProducerFactory(){
-        JsonSerializer<InventoryReservationFailedEvent> serializer = new JsonSerializer<>(producerObjectMapper());
-        serializer.setAddTypeInfo(false);
-        return new DefaultKafkaProducerFactory<String, InventoryReservationFailedEvent>(configs(), new StringSerializer(), serializer);
-
+       // JsonSerializer<InventoryReservationFailedEvent> serializer = new JsonSerializer<>(producerObjectMapper());
+        //serializer.setAddTypeInfo(false);
+        //return new DefaultKafkaProducerFactory<String, InventoryReservationFailedEvent>(configs(), new StringSerializer(), serializer);
+        return createProducerFactory();
     }
 
     @Bean(name = "inventoryReservationFailedEventKafkaTemplate")
     public KafkaTemplate<String, InventoryReservationFailedEvent> inventoryReservationFailedEventKafkaTemplate(){
-        return new KafkaTemplate<String, InventoryReservationFailedEvent>(inventoryReservationFailedEventProducerFactory());
+        return createKafkaTemplate();
+    }
+
+    public <T> ProducerFactory<String, T> createProducerFactory(){
+        JsonSerializer<T> serializer = new JsonSerializer<T>(producerObjectMapper());
+        serializer.setAddTypeInfo(false);
+        return new DefaultKafkaProducerFactory<String, T>(configs(), new StringSerializer(), serializer);
+    }
+
+    public <T> KafkaTemplate<String, T> createKafkaTemplate(){
+        return new KafkaTemplate<String, T>(createProducerFactory());
     }
 }

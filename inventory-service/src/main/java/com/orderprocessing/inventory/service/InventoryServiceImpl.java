@@ -27,9 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class InventoryServiceImpl implements IInventoryService{
-
     private static final Logger logger = LoggerFactory.getLogger(InventoryServiceImpl.class);
-
     private ProductRepository productRepository;
     private ProductReservationsRepository productReservationsRepository;
     @Autowired
