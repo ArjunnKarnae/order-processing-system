@@ -1,5 +1,8 @@
 package com.orderprocessing.orders.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "Product", description = "Product DTO")
 public class ProductDTO {
 
     public ProductDTO() {
@@ -12,9 +15,13 @@ public class ProductDTO {
         this.category = category;
     }
 
+    @Schema(name = "product-id", description = "ID of the Product", example = "PROD-S396W67E")
     private String productId;
+    @Schema(name = "product-name", description = "Product Name")
     private String productName;
+    @Schema(name = "product-description", description = "More Information about Product")
     private String productDescription;
+    @Schema(name = "category", description = "Product Category")
     private String category;
 
     public String getProductId() {

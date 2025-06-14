@@ -1,8 +1,11 @@
 package com.orderprocessing.orders.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Schema(name = "Order Response", description = "Order Response DTO")
 public class OrderResponse {
 
     public OrderResponse() {
@@ -16,10 +19,19 @@ public class OrderResponse {
         this.orderDate = orderDate;
     }
 
+    @Schema(name = "order-id", description = "Order ID", example = "ORD-93s7df7c")
     private String orderId;
+
+    @Schema(name = "customer-id", description = "Customer ID", example = "Cust001")
     private String customerId;
+
+    @Schema(name = "order-items", description = "List of Ordered Items")
     private List<OrderItemDTO> items;
+
+    @Schema(name = "total-amount", description = "Total Amount for the Order")
     private double totalAmount;
+
+    @Schema(name = "order-date", description = "Date when the Order was places")
     private LocalDateTime orderDate;
 
     public String getOrderId() {

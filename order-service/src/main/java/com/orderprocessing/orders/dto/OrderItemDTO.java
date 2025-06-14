@@ -1,5 +1,8 @@
 package com.orderprocessing.orders.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "Order Item", description = "Order Item DTO")
 public class OrderItemDTO {
 
     public OrderItemDTO() {
@@ -11,8 +14,11 @@ public class OrderItemDTO {
         this.price = price;
     }
 
+    @Schema(name = "Product", description = "Product Description")
     private ProductDTO productDTO;
+    @Schema(name = "quantity", description = "The number of products Ordered")
     private int quantity;
+    @Schema(name = "price", description = "Price for each product")
     private double price;
 
     public int getQuantity() {

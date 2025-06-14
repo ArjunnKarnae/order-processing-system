@@ -1,7 +1,10 @@
 package com.orderprocessing.orders.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.List;
 
+@Schema(name = "Order Request", description = "Order Request")
 public class OrderRequest {
 
     public OrderRequest() {
@@ -13,8 +16,11 @@ public class OrderRequest {
         this.totalAmount = totalAmount;
     }
 
+    @Schema(name = "customer-id", description = "Customer ID")
     private String customerId;
+    @Schema(name = "Order Items", description = "Order Items List")
     private List<OrderItemDTO> items;
+    @Schema(name = "total-amount", description = "Total price for the Order")
     private double totalAmount;
 
     public String getCustomerId() {
